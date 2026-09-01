@@ -1,7 +1,7 @@
 ﻿# Supabase Security Audit
 
 Read-only SQL that tells you what is actually exposed in a Postgres or Supabase
-project. No agent, no dashboard, no write access required. Paste it into the SQL
+project. It needs no agent or dashboard and never writes anything. Paste it into the SQL
 editor and read the output.
 
 I wrote this auditing my own production database before anyone asked me to. It
