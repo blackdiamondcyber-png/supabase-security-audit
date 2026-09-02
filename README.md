@@ -48,7 +48,7 @@ an unintended call path and breaks nothing.
 `audit.sql` returns one row per finding with a severity. Expect noise on a
 healthy project:
 
-- Deny-by-default tables are usually staging tables, not problems.
+- Deny-by-default tables are usually staging tables rather than problems.
 - The list of `authenticated`-callable functions is your API. It should be
   large. What matters is whether anything in it surprises you.
 - One anon-callable function is often a legitimate signup or lookup path. Read
