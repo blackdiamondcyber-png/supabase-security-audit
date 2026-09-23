@@ -5,8 +5,10 @@
 
 begin;
 
-create temporary table verify_results as
-\i sql/verify.sql
+-- psql cannot finish an open statement from inside \i, so the shipped
+-- file is read into a variable and interpolated whole.
+\set verify_query `cat sql/verify.sql`
+create temporary table verify_results as :verify_query
 
 do $$
 declare

@@ -1,13 +1,15 @@
 -- Assertions that audit.sql reports every problem planted by fixture.sql.
 -- Run after 00-local-shim.sql and fixture.sql. Raises on first failure.
 --
--- This runs the real audit.sql via \i rather than re-typing its query, so
+-- This runs the real audit.sql, read in whole rather than re-typed, so
 -- the test tracks the shipped file instead of a copy of it.
 
 begin;
 
-create temporary table audit_results as
-\i sql/audit.sql
+-- psql cannot finish an open statement from inside \i, so the shipped
+-- file is read into a variable and interpolated whole.
+\set audit_query `cat sql/audit.sql`
+create temporary table audit_results as :audit_query
 
 do $$
 declare
