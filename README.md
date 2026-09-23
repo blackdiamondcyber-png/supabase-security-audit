@@ -4,7 +4,11 @@
 
 Read-only SQL that tells you what is actually exposed in a Postgres or Supabase
 project. It needs no agent or dashboard and never writes anything. Paste it into the SQL
-editor and read the output.
+editor and read the output, or run it from a terminal:
+
+```bash
+psql "$DATABASE_URL" -f sql/audit.sql
+```
 
 I wrote this auditing my own production database before anyone asked me to. It
 found something. That is generally how this goes.

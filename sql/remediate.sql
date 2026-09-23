@@ -11,7 +11,8 @@ from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 where n.nspname='public' and p.prosecdef
   and has_function_privilege('anon', p.oid, 'EXECUTE')
-  -- exclude anything you have deliberately exposed
+  -- exclude anything you have deliberately exposed; 'signup_lookup' is a placeholder,
+  -- replace it with your own project's allowlist
   and p.proname not in ('signup_lookup')
 
 union all
