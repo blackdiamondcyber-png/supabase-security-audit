@@ -1,5 +1,7 @@
 ﻿# Supabase Security Audit
 
+[![tests](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml)
+
 Read-only SQL that tells you what is actually exposed in a Postgres or Supabase
 project. It needs no agent or dashboard and never writes anything. Paste it into the SQL
 editor and read the output.
@@ -61,6 +63,10 @@ healthy project:
 | `sql/audit.sql` | All checks, one result set, severity-ordered |
 | `sql/remediate.sql` | Generates the REVOKE and ALTER statements for you |
 | `sql/verify.sql` | Re-run after remediation to confirm |
+| `sql/00-local-shim.sql` | Anon and authenticated roles for a plain Postgres |
+| `tests/fixture.sql` | Deliberately misconfigured schema for the tests below |
+| `tests/audit-tests.sql` | Asserts audit.sql catches every planted problem |
+| `tests/verify-tests.sql` | Asserts verify.sql is clean after remediation |
 
 ## Order of operations
 
@@ -74,3 +80,5 @@ you scrub it. Removing a secret from source does not un-leak it.
 ## License
 
 MIT.
+
+More of my work: [erik-pearson-portfolio.vercel.app](https://erik-pearson-portfolio.vercel.app). Contact: [LinkedIn](https://www.linkedin.com/in/erikpearson2).
