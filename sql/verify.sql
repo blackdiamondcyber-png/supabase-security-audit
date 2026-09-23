@@ -1,4 +1,4 @@
-﻿-- Run after remediation. Every number here should be zero except the last two.
+-- Run after remediation. Every number here should be zero except the last two.
 select
   (select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace
     where n.nspname='public' and c.relkind='r' and not c.relrowsecurity)      as tables_without_rls,

@@ -1,4 +1,4 @@
-﻿-- Generates remediation statements. Review the output, then run what you agree with.
+-- Generates remediation statements. Review the output, then run what you agree with.
 -- This script itself changes nothing.
 
 -- 1. Revoke public execute on SECURITY DEFINER functions reachable by anon.

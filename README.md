@@ -1,4 +1,4 @@
-﻿# Supabase Security Audit
+# Supabase Security Audit
 
 [![tests](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml)
 

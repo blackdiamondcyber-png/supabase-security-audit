@@ -1,4 +1,4 @@
-﻿-- Read-only security audit. Returns one row per finding.
+-- Read-only security audit. Returns one row per finding.
 -- Safe to run on production; performs no writes.
 
 with
@@ -66,13 +66,17 @@ ext_in_public as (
   join pg_namespace n on n.oid = e.extnamespace
   where n.nspname = 'public' and e.extname not in ('plpgsql')
 )
-select * from tables_no_rls
-union all select * from anon_secdef
-union all select * from mutable_path
-union all select * from authed_secdef
-union all select * from trigger_fn_exec
-union all select * from ext_in_public
-union all select * from rls_no_policy
+-- Postgres only lets ORDER BY name output columns after a UNION, not
+-- expressions over them, so the union is wrapped before it is sorted.
+select * from (
+  select * from tables_no_rls
+  union all select * from anon_secdef
+  union all select * from mutable_path
+  union all select * from authed_secdef
+  union all select * from trigger_fn_exec
+  union all select * from ext_in_public
+  union all select * from rls_no_policy
+) findings
 order by case severity
   when 'CRITICAL' then 1 when 'MEDIUM' then 2
   when 'REVIEW'  then 3 when 'LOW'    then 4 else 5 end,
