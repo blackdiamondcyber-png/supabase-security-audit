@@ -1,9 +1,12 @@
 -- Generates remediation statements. Review the output, then run what you agree with.
 -- This script itself changes nothing.
 
--- 1. Revoke public execute on SECURITY DEFINER functions reachable by anon.
+-- 1. Revoke execute on SECURITY DEFINER functions reachable by anon.
+-- PUBLIC has to be in the list: Postgres grants EXECUTE on every new function
+-- to PUBLIC, anon inherits it, and revoking from anon alone changes nothing.
+-- On Supabase the service_role keeps its own explicit grant.
 select 'revoke execute on function public.' || p.oid::regprocedure::text
-       || ' from anon, authenticated;' as statement
+       || ' from public, anon, authenticated;' as statement
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 where n.nspname='public' and p.prosecdef
@@ -15,7 +18,7 @@ union all
 
 -- 2. Trigger functions never need direct execute.
 select 'revoke execute on function public.' || p.oid::regprocedure::text
-       || ' from anon, authenticated;'
+       || ' from public, anon, authenticated;'
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 where n.nspname='public'

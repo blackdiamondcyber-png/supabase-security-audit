@@ -25,7 +25,11 @@ found something. That is generally how this goes.
 
 Batch import and export helpers get written as `SECURITY DEFINER` so they can
 move data without fighting policies. That is correct. The mistake is leaving
-`EXECUTE` granted to `anon` and `authenticated`, which is the default.
+`EXECUTE` granted to `anon` and `authenticated`, which is the default. The
+default comes from `PUBLIC`: Postgres grants `EXECUTE` on every new function to
+`PUBLIC`, and every role inherits it, so revoking from `anon` and
+`authenticated` alone leaves the function callable. The first CI run of this
+repo's own fixture caught `remediate.sql` making exactly that mistake.
 
 When that happens, your entire RLS policy set is decorative. Every table can be
 enabled, every policy can be correct, and one unguarded function still hands out
@@ -35,14 +39,14 @@ no audit trail, so you cannot tell whether it has ever been used.
 
 ```sql
 -- The fix. Server-side callers use the service role key and are unaffected.
-revoke execute on function public.bulk_export(text) from anon, authenticated;
+revoke execute on function public.bulk_export(text) from public, anon, authenticated;
 ```
 
 ## Trigger functions are a different case
 
 A function returning `trigger` does not need direct execute rights. Triggers
 fire as part of the statement regardless of who can call the function by name.
-Revoking `EXECUTE` from `anon` and `authenticated` on trigger functions removes
+Revoking `EXECUTE` from `PUBLIC`, `anon` and `authenticated` on trigger functions removes
 an unintended call path and breaks nothing.
 
 ## Reading the output
