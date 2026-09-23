@@ -1,4 +1,4 @@
-name: tests
+name: audit
 
 on:
   push:
@@ -38,6 +38,18 @@ jobs:
 
       - name: Confirm audit.sql reports every planted problem
         run: $PSQL -f tests/audit-tests.sql
+
+      # The README's "Sample output" block claims to be this exact report, so
+      # print it and fail if the two ever drift apart. Trailing spaces and
+      # blank lines are ignored; everything else must match.
+      - name: Print the audit report and check it matches the README
+        run: |
+          set -o pipefail
+          $PSQL -f sql/audit.sql | tee /tmp/audit.txt
+          awk '/^## Sample output/{f=1} f&&/^```text/{p=1;next} p&&/^```/{exit} p' README.md > /tmp/readme-sample.txt
+          test -s /tmp/readme-sample.txt
+          norm() { sed -e 's/[[:space:]]*$//' "$1" | sed -e '/^$/d'; }
+          diff -u <(norm /tmp/readme-sample.txt) <(norm /tmp/audit.txt)
 
       - name: Remediate, then confirm verify.sql reports a clean state
         run: |

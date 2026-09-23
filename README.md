@@ -1,6 +1,6 @@
 # Supabase Security Audit
 
-[![tests](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml)
+[![audit](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/blackdiamondcyber-png/supabase-security-audit/actions/workflows/ci.yml)
 
 Read-only SQL that tells you what is actually exposed in a Postgres or Supabase
 project. It needs no agent or dashboard and never writes anything. Paste it into the SQL
@@ -67,7 +67,8 @@ healthy project:
 ## Sample output
 
 This is `audit.sql` run by CI against `tests/fixture.sql`, a schema with one
-deliberate mistake per check. Every name is fictional; nothing here comes from a
+deliberate mistake per check. CI prints this report on every push and fails if
+it stops matching the block below. Every name is fictional; nothing here comes from a
 real project.
 
 ```text
