@@ -60,6 +60,41 @@ healthy project:
 - One anon-callable function is often a legitimate signup or lookup path. Read
   its body and confirm it returns one row and leaks nothing.
 
+## Sample output
+
+This is `audit.sql` run by CI against `tests/fixture.sql`, a schema with one
+deliberate mistake per check. Every name is fictional; nothing here comes from a
+real project.
+
+```text
+ severity |                  finding                   |        object         |                             detail
+----------+--------------------------------------------+-----------------------+-----------------------------------------------------------------
+ CRITICAL | SECURITY DEFINER callable by anon          | fixture_anon_secdef   | Bypasses RLS. Anyone with the public key can call it.
+ CRITICAL | table without RLS                          | orders_no_rls         | Readable/writable with the public API key
+ MEDIUM   | function without pinned search_path        | fixture_unpinned_path | A caller can shadow public and change what this function reads.
+ REVIEW   | SECURITY DEFINER callable by authenticated | fixture_authed_secdef | Part of your API surface. Confirm it should be.
+ LOW      | extension in public schema                 | pgcrypto              | Consider a dedicated schema to avoid namespace collisions.
+ LOW      | trigger function directly callable         | fixture_trigger_fn    | Triggers fire regardless. Direct execute is an unintended path.
+ INFO     | RLS on, no policy                          | notes_rls_no_policy   | Deny-by-default. Intentional, or a table someone forgot?
+(7 rows)
+```
+
+`remediate.sql` then generates these four statements, CI runs them, and
+`verify.sql` has to report zero on every counter that should be zero:
+
+```sql
+revoke execute on function public.fixture_anon_secdef() from public, anon, authenticated;
+revoke execute on function public.fixture_trigger_fn() from public, anon, authenticated;
+alter function public.fixture_unpinned_path() set search_path = public;
+alter table public.orders_no_rls enable row level security;
+```
+
+Getting this loop green found two bugs in the scripts themselves. `audit.sql`
+sorted a `UNION` by an expression, which Postgres rejects, so it did not run as
+published. And `remediate.sql` revoked from `anon` and `authenticated` but
+not `PUBLIC`, which left the fixture's anon-callable function callable after
+"remediation". Both are fixed, and the test now fails if either comes back.
+
 ## Files
 
 | Path | Contents |
